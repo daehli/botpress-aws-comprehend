@@ -84,10 +84,12 @@ module.exports = {
     })
 
     router.post('/config', async (req, res) => {
-      console.log(req.body)
-      const { config } = req.body
-      await configurator.saveAll({ config })
-      await configurator.loadAll()
+      const { ...config } = req.body
+      console.log(config)
+      await configurator.saveAll(config).then(data => {
+        console.log(data)
+      })
+      // await configurator.loadAll()
       initAWSComprehend(config)
       res.sendStatus(200)
     })

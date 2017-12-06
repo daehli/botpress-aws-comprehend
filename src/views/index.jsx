@@ -27,7 +27,8 @@ export default class AWSModule extends React.Component {
     this.state = {
       loading: true,
       initialStateHash: null,
-      validated: false
+      validated: false,
+      message: {}
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -72,7 +73,10 @@ export default class AWSModule extends React.Component {
     this.setState({ loading: true })
 
     return this.getAxios()
-      .post('/api/botpress-aws-comprehend/config', _.omit(this.state, 'loading', 'initialStateHash', 'validated'))
+      .post(
+        '/api/botpress-aws-comprehend/config',
+        _.omit(this.state, 'loading', 'initialStateHash', 'validated', 'message')
+      )
       .then(() => {
         this.setState({
           message: {
@@ -103,6 +107,10 @@ export default class AWSModule extends React.Component {
         return this.state[i]
       })
       .join(' ')
+  }
+
+  renderMessageAlert() {
+    return this.state.message ? <Alert bsStyle={this.state.message.type}>{this.state.message.text}</Alert> : null
   }
 
   renderLabel(label, link) {
@@ -169,6 +177,11 @@ export default class AWSModule extends React.Component {
   }
 
   render() {
-    return <div class="content">{this.renderForm()}</div>
+    return (
+      <div class="content">
+        {this.renderForm()}
+        {this.renderMessageAlert()}
+      </div>
+    )
   }
 }
