@@ -28,7 +28,7 @@ export default class AWSModule extends React.Component {
       loading: true,
       initialStateHash: null,
       validated: false,
-      message: {}
+      message: null
     }
 
     this.handleChange = this.handleChange.bind(this)
