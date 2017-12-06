@@ -45,7 +45,7 @@ const incomingMiddleWare = async (event, next) => {
   }
 }
 
-const initAWSComprehend = (bp, configurator) => {
+const initAWSComprehend = configurator => {
   comprehend = Promise.promisifyAll(new _AWS.Comprehend({ ...configurator }))
 }
 
@@ -71,7 +71,7 @@ module.exports = {
 
     const config = await configurator.loadAll()
 
-    initAWSComprehend(bp, config)
+    initAWSComprehend(config)
 
     createConfigFile(bp)
   },
@@ -79,10 +79,21 @@ module.exports = {
   ready: async function(bp, configurator) {
     var router = bp.getRouter('botpress-aws-comprehend')
 
+    router.get('/config', async (req, res) => {
+      res.send(await configurator.loadAll())
+    })
+
+    router.post('/config', async (req, res) => {
+      console.log(req.body)
+      const { config } = req.body
+      await configurator.saveAll({ config })
+      config = await configurator.loadAll()
+      initAWSComprehend(config)
+      res.sendStatus(200)
+    })
+
     // Your module's been loaded by Botpress.
     // Serve your APIs here, execute logic, etc.
-
-    const config = await configurator.loadAll()
     // Do fancy stuff here :)
   }
 }
