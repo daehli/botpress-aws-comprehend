@@ -87,7 +87,7 @@ module.exports = {
       console.log(req.body)
       const { config } = req.body
       await configurator.saveAll({ config })
-      config = await configurator.loadAll()
+      await configurator.loadAll()
       initAWSComprehend(config)
       res.sendStatus(200)
     })
