@@ -1,3 +1,31 @@
 .content {
   display: grid;
 }
+
+.header {
+  position: relative;
+  border-bottom: solid 1px #eeeeee;
+  margin-bottom: 20px;
+
+  h4 {
+    padding: 15px;
+    padding-left: 20px;
+    margin: 0px;
+    color: gray;
+  }
+
+  button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+}
+
+.section {
+  background-color: #fff;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+.bp-button {
+}
