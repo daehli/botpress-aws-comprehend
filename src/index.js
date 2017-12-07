@@ -32,24 +32,22 @@ const createConfigFile = bp => {
 const incomingMiddleWare = async (event, next) => {
   const message = _.get(event, 'text')
   if (message) {
-    let language = await comprehend.detectDominantLanguageAsync({ Text: message })
+    let language = await comprehend.detectDominantLanguageAsync({ Text: message }).catch(err => {
+      event.bp.logger.debug('INVALID AWS Raison : ' + err)
+      next()
+    })
+    console.log(language)
     language = _.get(language, 'Languages[0].LanguageCode')
-    comprehend
-      .detectEntitiesAsync({ Text: message, LanguageCode: language })
-      .then(async data => {
-        let awsObj = {}
-        const key = await comprehend.detectKeyPhrasesAsync({ Text: message, LanguageCode: language })
-        const sentiment = await comprehend.detectSentimentAsync({
-          Text: message,
-          LanguageCode: language
-        })
-        event.aws_comprehend = _.assign(awsObj, data, key, sentiment)
-        next()
+    comprehend.detectEntitiesAsync({ Text: message, LanguageCode: language }).then(async data => {
+      let awsObj = {}
+      const key = await comprehend.detectKeyPhrasesAsync({ Text: message, LanguageCode: language })
+      const sentiment = await comprehend.detectSentimentAsync({
+        Text: message,
+        LanguageCode: language
       })
-      .catch(err => {
-        event.bp.logger.debug('botpress-aws-comprehend error: ', err)
-        next()
-      })
+      event.aws_comprehend = _.assign(awsObj, data, key, sentiment)
+      next()
+    })
   }
 }
 
@@ -68,7 +66,7 @@ module.exports = {
 
   init: async function(bp, configurator) {
     bp.middlewares.register({
-      name: 'aws-comprehend.sendMessage',
+      name: 'aws-comprehend-hear',
       module: 'botpress-aws-comprehend',
       type: 'incoming',
       handler: incomingMiddleWare,
