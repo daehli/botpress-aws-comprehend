@@ -4,8 +4,8 @@
   "description": "Botpress AWS comprehend Plugins for NLP process",
   "main": "bin/node.bundle.js",
   "botpress": {
-    "menuText": "botpress-aws-comprehend",
-    "menuIcon": "view_module",
+    "menuText": "AWS-Comprehend",
+    "menuIcon": "custom",
     "webBundle": "bin/web.bundle.js"
   },
   "scripts": {
