@@ -32,10 +32,18 @@ const createConfigFile = bp => {
 const incomingMiddleWare = async (event, next) => {
   const message = _.get(event, 'text')
   if (message) {
+    let language = await comprehend.detectDominantLanguageAsync({ Text: message })
+    language = _.get(language, 'Languages[0].LanguageCode')
     comprehend
-      .detectEntitiesAsync({ Text: message, LanguageCode: 'en' })
-      .then(data => {
-        event.aws_comprehend = data
+      .detectEntitiesAsync({ Text: message, LanguageCode: language })
+      .then(async data => {
+        let awsObj = {}
+        const key = await comprehend.detectKeyPhrasesAsync({ Text: message, LanguageCode: language })
+        const sentiment = await comprehend.detectSentimentAsync({
+          Text: message,
+          LanguageCode: language
+        })
+        event.aws_comprehend = _.assign(awsObj, data, key, sentiment)
         next()
       })
       .catch(err => {
@@ -85,7 +93,6 @@ module.exports = {
 
     router.post('/config', async (req, res) => {
       const { ...config } = req.body
-      console.log(config)
       await configurator.saveAll(config).then(() => {})
 
       initAWSComprehend(config)
